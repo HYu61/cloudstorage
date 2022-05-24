@@ -20,14 +20,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(this.authenticationService);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/signup", "/h2/**","/css/**", "/js/**").permitAll()
+                .antMatchers("/signup", "/h2-console/**","/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated();
 
 
@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin().defaultSuccessUrl("/home", true);
 
         http.csrf()
-                .ignoringAntMatchers("/h2/**");
+                .ignoringAntMatchers("/h2-console/**");
         http.headers().frameOptions().sameOrigin();
     }
 }
