@@ -10,18 +10,23 @@ import org.springframework.http.HttpStatus;
 @Getter
 @Setter
 public class AppException extends RuntimeException{
-//    protected String message = super.getMessage();
+    protected String message = super.getMessage();
     protected HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
     /**
-     * Constructs a new runtime exception with the specified detail message.
-     * The cause is not initialized, and may subsequently be initialized by a
-     * call to {@link #initCause}.
-     *
-     * @param message the detail message. The detail message is saved for
-     *                later retrieval by the {@link #getMessage()} method.
+     * Constructs a new runtime exception with {@code null} as its
+     * detail message.  The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link #initCause}.
+     */
+    public AppException() {
+    }
+
+    /**
+     * Constructs a new runtime exception with {@code null} as its
+     * detail message.  The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link #initCause}.
      */
     public AppException(String message) {
-        super(message);
+        this.message = message;
     }
 }

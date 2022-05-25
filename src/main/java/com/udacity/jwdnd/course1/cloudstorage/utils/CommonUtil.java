@@ -14,7 +14,11 @@ public class CommonUtil {
     private CommonUtil() {
     }
 
-    // Generate the secure random string
+
+    /**
+     * Generate the secure random string
+     * @return the random string
+     */
     public static String generateSecureString(){
         SecureRandom secureRandom = new SecureRandom();
         byte[] salt = new byte[16];

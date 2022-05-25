@@ -1,10 +1,8 @@
 package com.udacity.jwdnd.course1.cloudstorage.controllers;
 
-import com.udacity.jwdnd.course1.cloudstorage.exceptions.AppException;
-import com.udacity.jwdnd.course1.cloudstorage.models.User;
-import com.udacity.jwdnd.course1.cloudstorage.models.ui.UserForm;
+import com.udacity.jwdnd.course1.cloudstorage.exceptions.SignupException;
+import com.udacity.jwdnd.course1.cloudstorage.models.ui.UserDto;
 import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,28 +26,26 @@ public class SignUpPageController {
     }
 
     @GetMapping
-    public String displaySignUpPage(UserForm userForm) {
+    public String displaySignUpPage(UserDto userDto) {
         return "signup";
     }
 
     @PostMapping
-    public String registerUser(@ModelAttribute("userForm") @Valid UserForm userForm,
+    public String registerUser(@ModelAttribute("userDto") @Valid UserDto userDto,
                                Model model, RedirectAttributes redirectAttributes) {
 
         // check if the username already exists
-        if (userService.isUserExist(userForm.getUsername())) {
+        if (userService.isUserExist(userDto.getUsername())) {
             model.addAttribute("msg", "Username already exists!");
             return "signup";
         }
 
-        // add user into db
-        User user = new User();
-        BeanUtils.copyProperties(userForm, user);
-        Integer result = userService.addUser(user);
+       // add user into db
+        Integer result = userService.addUser(userDto);
 
         // if has problem send the error message
         if (result == null) {
-            throw new AppException("Can not insert the user");
+            throw new SignupException();
         }
 
         // if sign up successfully redirect to the login page

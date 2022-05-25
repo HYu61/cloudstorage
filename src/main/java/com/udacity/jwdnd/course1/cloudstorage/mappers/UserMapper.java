@@ -22,5 +22,6 @@ public interface UserMapper {
     Optional<User> selectUserByUsername(String username);
 
 
-
+    @Select("SELECT userid FROM USERS WHERE username = #{username} LIMIT 1")
+    Integer selectUserIdByUsername(String username);
 }

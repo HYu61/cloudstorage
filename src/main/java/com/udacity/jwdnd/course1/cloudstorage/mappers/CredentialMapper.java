@@ -16,15 +16,15 @@ public interface CredentialMapper {
     @Options(useGeneratedKeys = true, keyProperty = "credentialId")
     Integer insertCredential(Credential credential);
 
-    @Select("SELECT * FROM CREDENTIALS WHERE userid = #{userId} ORDER BY credentialid")
-    List<Credential> findAllByUserId(Integer userId);
+    @Select("SELECT * FROM CREDENTIALS WHERE userid = #{loginUserId} ORDER BY credentialid")
+    List<Credential> findAllByUserId(Integer loginUserId);
 
-    @Select("SELECT * FROM CREDENTIALS WHERE credentialid = #{credentialId}")
-    Optional<Credential> findCredentialById(Integer credentialId);
+    @Select("SELECT * FROM CREDENTIALS WHERE credentialid = #{credentialId} AND userid = #{loginUserId}")
+    Optional<Credential> findCredentialById(Integer credentialId, Integer loginUserId);
 
-    @Update("UPDATE CREDENTIALS SET url= #{url}, username=#{username}, password=#{password} WHERE credentialid = #{credentialId}")
-    Integer updateCredentialById(Credential updatedCredential);
+    @Update("UPDATE CREDENTIALS SET password=#{credential.password} WHERE credentialid = #{credential.credentialId} AND userid = #{loginUserId}")
+    Integer updateCredentialById(Credential credential, Integer loginUserId);
 
-    @Delete("DELETE FROM CREDENTIALS WHERE WHERE credentialid = #{credentialId}")
-    Integer deleteCredentialById(Integer credentialId);
+    @Delete("DELETE FROM CREDENTIALS WHERE credentialid = #{credentialId} AND userid = #{loginUserId}")
+    Integer deleteCredentialById(Integer credentialId, Integer loginUserId);
 }

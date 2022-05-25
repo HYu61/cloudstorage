@@ -1,18 +1,13 @@
 package com.udacity.jwdnd.course1.cloudstorage.controllers;
 
-import com.udacity.jwdnd.course1.cloudstorage.exceptions.UserNotFoundException;
+import com.udacity.jwdnd.course1.cloudstorage.exceptions.CredentialException;
 import com.udacity.jwdnd.course1.cloudstorage.models.Credential;
-import com.udacity.jwdnd.course1.cloudstorage.models.User;
-import com.udacity.jwdnd.course1.cloudstorage.models.ui.CredentialForm;
+import com.udacity.jwdnd.course1.cloudstorage.models.ui.CredentialDto;
 import com.udacity.jwdnd.course1.cloudstorage.services.CredentialService;
 import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -32,25 +27,33 @@ public class CredentialController {
     }
 
 
-
     @PostMapping
-    public String addCredential(@Valid CredentialForm credentialForm, Authentication authentication, Model model) {
-
-        Credential newCredential = new Credential();
-        BeanUtils.copyProperties(credentialForm, newCredential);
-
+    public String addOrEditCredential(@Valid CredentialDto credentialDto, Authentication authentication, RedirectAttributes redirectAttributes) {
         String loginUsername = authentication.getName();
 
+        if (credentialDto.getCredentialId() == null) {
+            // add credential into db
+            credentialService.addCredential(credentialDto, loginUsername);
+            redirectAttributes.addFlashAttribute("msg", String.format("Credential for %s is created!", credentialDto.getUrl()));
+        } else {
+            // update credential
 
-        // set userId to the credential model, if the user is not exists, throw exception.
-        userService.getUserByUsername(loginUsername).ifPresentOrElse(loginUser -> {
-            newCredential.setUserId(loginUser.getUserId());
-        }, () -> {
-            throw new UserNotFoundException("User not exists!");
-        });
+            credentialService.modifyCredential(credentialDto, loginUsername);
+            redirectAttributes.addFlashAttribute("msg", String.format("Credential for %s is edited!", credentialDto.getUrl()));
 
+        }
 
-        credentialService.addCredential(newCredential);
+        return "redirect:/home";
+    }
+
+    @GetMapping("/delete/credentialId")
+    public String deleteCredential(@RequestParam Integer credentialId, Authentication authentication, RedirectAttributes redirectAttributes) {
+        if (credentialId == null) {
+            throw new CredentialException("No such credential");
+        }
+
+        Credential removedCred = credentialService.removeCredential(credentialId, authentication.getName());
+        redirectAttributes.addFlashAttribute("msg", String.format("Credential: %s for %s is removed!", removedCred.getUsername(), removedCred.getUrl()));
 
         return "redirect:/home";
     }

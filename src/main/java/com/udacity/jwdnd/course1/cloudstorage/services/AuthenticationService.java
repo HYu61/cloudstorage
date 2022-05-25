@@ -1,6 +1,5 @@
 package com.udacity.jwdnd.course1.cloudstorage.services;
 
-import com.udacity.jwdnd.course1.cloudstorage.exceptions.UserNotFoundException;
 import com.udacity.jwdnd.course1.cloudstorage.models.User;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

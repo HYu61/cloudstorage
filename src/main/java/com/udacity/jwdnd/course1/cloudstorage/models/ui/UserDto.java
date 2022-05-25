@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-public class UserForm {
+public class UserDto {
     @NotBlank(message = "Username is required!")
     private String username;
 
