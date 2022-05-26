@@ -41,9 +41,7 @@ public class CredentialService {
 
         // set userId to the credential model, if the user is not exists, throw exception.
         Integer loginUserId = userService.getLoginUserId(loginUsername);
-        if (loginUserId == null) {
-            throw new CredentialException("Can not handler credential due to userId missing!");
-        }
+
         newCredential.setUserId(loginUserId);
 
         // check if the url and the username combined is duplicate, if duplicate throw exception
@@ -55,7 +53,11 @@ public class CredentialService {
         String encryptPassword = encryptionService.encryptValue(credentialDto.getPassword(), key);
         newCredential.setPassword(encryptPassword);
 
-        return credentialMapper.insertCredential(newCredential);
+        Integer result = credentialMapper.insertCredential(newCredential);
+        if (result == null){
+            throw new CredentialException("Can not add the credential");
+        }
+        return result;
 
     }
 
@@ -82,9 +84,7 @@ public class CredentialService {
 
         // make sure the edited credential is belongs to the login user
         Integer loginUserId = userService.getLoginUserId(loginUsername);
-        if (loginUserId == null) {
-            throw new CredentialException("Can not handler credential due to userId missing!");
-        }
+
         Credential newCredential = credentialMapper.findCredentialById(credentialDto.getCredentialId(), loginUserId)
                 .orElseThrow(() -> new CredentialException("Can not find the credential!"));
 
@@ -92,7 +92,12 @@ public class CredentialService {
         String newPassword = encryptionService.encryptValue(credentialDto.getPassword(), newCredential.getKey());
         newCredential.setPassword(newPassword);
 
-        return credentialMapper.updateCredentialById(newCredential, loginUserId);
+        Integer result = credentialMapper.updateCredentialById(newCredential, loginUserId);
+        if(result == null){
+            throw new CredentialException("Can not modify the credential");
+        }
+
+        return result;
     }
 
     /**
@@ -102,9 +107,7 @@ public class CredentialService {
      */
     public Credential removeCredential(Integer credentialId, String loginUsername) {
         Integer loginUserId = userService.getLoginUserId(loginUsername);
-        if (loginUserId == null) {
-            throw new CredentialException("Can not handler credential due to userId missing!");
-        }
+
         Credential need2Removed = credentialMapper.findCredentialById(credentialId, loginUserId).orElseThrow(() -> new CredentialException("No such credential"));
 
         Integer result = credentialMapper.deleteCredentialById(credentialId, loginUserId);

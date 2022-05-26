@@ -27,7 +27,7 @@ public class AuthenticationService implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        User loginUser = userService.getUserByUsername(username).orElse(null);
+        User loginUser = userService.getUserByForLogin(username);
         if(loginUser !=null && hashService.getHashedValue(password,loginUser.getSalt()).equals(loginUser.getPassword())){
             return new UsernamePasswordAuthenticationToken(username, password, new ArrayList<>());
         }

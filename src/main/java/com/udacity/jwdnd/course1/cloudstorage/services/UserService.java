@@ -1,5 +1,8 @@
 package com.udacity.jwdnd.course1.cloudstorage.services;
 
+import com.udacity.jwdnd.course1.cloudstorage.exceptions.AppException;
+import com.udacity.jwdnd.course1.cloudstorage.exceptions.SignupException;
+import com.udacity.jwdnd.course1.cloudstorage.exceptions.UserNotFoundException;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import com.udacity.jwdnd.course1.cloudstorage.models.User;
 import com.udacity.jwdnd.course1.cloudstorage.models.ui.UserDto;
@@ -36,8 +39,14 @@ public class UserService {
      * @param username
      * @return the Optional<User> or Optional.empty id the username is invalid
      */
-    public Optional<User> getUserByUsername(String username){
-        return userMapper.selectUserByUsername(username);
+    public User getUserByUsername(String username){
+
+        return userMapper.selectUserByUsername(username).orElseThrow(()->new UserNotFoundException());
+    }
+
+    public User getUserByForLogin(String username){
+
+        return userMapper.selectUserByUsername(username).orElse(null);
     }
 
     /**
@@ -46,7 +55,11 @@ public class UserService {
      * @return the userid or null if the username is invalid
      */
     public Integer getLoginUserId(String username){
-        return userMapper.selectUserIdByUsername(username);
+        Integer result = userMapper.selectUserIdByUsername(username);
+        if(result == null){
+            throw new UserNotFoundException();
+        }
+        return result;
     }
 
     /**
@@ -66,6 +79,11 @@ public class UserService {
         user.setPassword(hashService.getHashedValue(user.getPassword(),salt));
 
         // insert user into db
+
+        Integer result = userMapper.insertUser(user);
+        if(result == null){
+            throw new SignupException();
+        }
         return userMapper.insertUser(user);
     }
 }

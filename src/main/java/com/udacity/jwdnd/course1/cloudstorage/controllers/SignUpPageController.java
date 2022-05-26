@@ -43,14 +43,9 @@ public class SignUpPageController {
        // add user into db
         Integer result = userService.addUser(userDto);
 
-        // if has problem send the error message
-        if (result == null) {
-            throw new SignupException();
-        }
-
         // if sign up successfully redirect to the login page
         redirectAttributes.addFlashAttribute("signupSuccess", true);
-        return "redirect:login";
+        return "redirect:/login";
 
 
     }

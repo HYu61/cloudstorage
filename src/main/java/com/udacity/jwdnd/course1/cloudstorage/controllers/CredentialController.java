@@ -19,11 +19,9 @@ import javax.validation.Valid;
 @RequestMapping("/credential")
 public class CredentialController {
     private final CredentialService credentialService;
-    private final UserService userService;
 
-    public CredentialController(CredentialService credentialService, UserService userService) {
+    public CredentialController(CredentialService credentialService) {
         this.credentialService = credentialService;
-        this.userService = userService;
     }
 
 
@@ -34,12 +32,11 @@ public class CredentialController {
         if (credentialDto.getCredentialId() == null) {
             // add credential into db
             credentialService.addCredential(credentialDto, loginUsername);
-            redirectAttributes.addFlashAttribute("msg", String.format("Credential for %s is created!", credentialDto.getUrl()));
+            redirectAttributes.addFlashAttribute("credMsg", String.format("Credential for %s is created!", credentialDto.getUrl()));
         } else {
             // update credential
-
             credentialService.modifyCredential(credentialDto, loginUsername);
-            redirectAttributes.addFlashAttribute("msg", String.format("Credential for %s is edited!", credentialDto.getUrl()));
+            redirectAttributes.addFlashAttribute("credMsg", String.format("Credential for %s is edited!", credentialDto.getUrl()));
 
         }
 
@@ -53,7 +50,7 @@ public class CredentialController {
         }
 
         Credential removedCred = credentialService.removeCredential(credentialId, authentication.getName());
-        redirectAttributes.addFlashAttribute("msg", String.format("Credential: %s for %s is removed!", removedCred.getUsername(), removedCred.getUrl()));
+        redirectAttributes.addFlashAttribute("credMsg", String.format("Credential: %s for %s is removed!", removedCred.getUsername(), removedCred.getUrl()));
 
         return "redirect:/home";
     }
