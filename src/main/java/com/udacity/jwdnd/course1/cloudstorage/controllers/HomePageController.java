@@ -2,8 +2,10 @@ package com.udacity.jwdnd.course1.cloudstorage.controllers;
 
 import com.udacity.jwdnd.course1.cloudstorage.models.User;
 import com.udacity.jwdnd.course1.cloudstorage.models.ui.CredentialDto;
+import com.udacity.jwdnd.course1.cloudstorage.models.ui.FileDto;
 import com.udacity.jwdnd.course1.cloudstorage.models.ui.NoteDto;
 import com.udacity.jwdnd.course1.cloudstorage.services.CredentialService;
+import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
 import com.udacity.jwdnd.course1.cloudstorage.services.NoteService;
 import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
 import org.springframework.beans.BeanUtils;
@@ -25,11 +27,13 @@ public class HomePageController {
     private final CredentialService credentialService;
     private final NoteService noteService;
     private final UserService userService;
+    private final FileService fileService;
 
-    public HomePageController(CredentialService credentialService, NoteService noteService, UserService userService) {
+    public HomePageController(CredentialService credentialService, NoteService noteService, UserService userService, FileService fileService) {
         this.credentialService = credentialService;
         this.noteService = noteService;
         this.userService = userService;
+        this.fileService = fileService;
     }
 
     @GetMapping
@@ -37,7 +41,7 @@ public class HomePageController {
         User loginUser = userService.getUserByUsername(authentication.getName());
         Integer userId = loginUser.getUserId();
 
-        // create a new list for credentials
+        // create a new list for credentials, include encrypted and plaint password
         List<CredentialDto> credentialDtoList = credentialService.getAllCredentials(userId).stream()
                 .map(c->{
                     CredentialDto credentialDto = new CredentialDto();
@@ -47,7 +51,7 @@ public class HomePageController {
                     return credentialDto;
                 }).collect(Collectors.toList());
 
-        // create noteList
+        // get noteList for display
         List<NoteDto> noteDtoList = noteService.getAllNotesByUserId(userId).stream()
                 .map(n->{
                     NoteDto noteDto = new NoteDto();
@@ -55,8 +59,18 @@ public class HomePageController {
                     return noteDto;
                 }).collect(Collectors.toList());
 
+        // get fileList for display
+        List<FileDto> fileDtoList = fileService.getFiles(userId).stream()
+                .map(f->{
+                    FileDto fileDto = new FileDto();
+                    BeanUtils.copyProperties(f, fileDto);
+                    return fileDto;
+                }).collect(Collectors.toList());
+
         model.addAttribute("credentials", credentialDtoList);
         model.addAttribute("notes", noteDtoList);
+        model.addAttribute("files", fileDtoList);
+
         model.addAttribute("username", authentication.getName());
         return "/home";
     }

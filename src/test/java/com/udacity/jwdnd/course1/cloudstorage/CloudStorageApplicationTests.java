@@ -135,8 +135,7 @@ class CloudStorageApplicationTests {
 	public void testRedirection() {
 		// Create a test account
 		// password must meet the complex requirement
-		doMockSignUp("Redirection","Test","RT","123QWEasd!@#");
-		
+		doMockSignUp("Redirection","Test","TestRedirection","123QWEasd!@#");
 		// Check if we have been redirected to the log in page.
 		Assertions.assertEquals("http://localhost:" + this.port + "/login", driver.getCurrentUrl());
 	}
@@ -147,12 +146,12 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testDuplicateUsername() {
 		// Create a test account
-		doMockSignUp("Redirection","Test","RT","123QWEasd!@#");
+		doMockSignUp("Redirection","Test","TestDuplicateUsername","123QWEasd!@#");
 
 		WebElement linkBack2SignUp = driver.findElement(By.id("back-to-signup"));
 		linkBack2SignUp.click();
 		// Create the account using the same username
-		doMockSignUp("Redirection","Test","RT","123QWEasd!@#");
+		doMockSignUp("Redirection","Test","TestDuplicateUsername","123QWEasd!@#");
 
 		// Check if we have been redirected to the log in page.
 		Assertions.assertTrue(driver.findElement(By.id("error-msg")).getText().contains("Username already exists!"));
@@ -197,8 +196,8 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testLargeUpload() {
 		// Create a test account
-		doMockSignUp("Large File","Test","LFT","123");
-		doLogIn("LFT", "123");
+		doMockSignUp("Large File","Test","LFT","123QWEasd!@#");
+		doLogIn("LFT", "123QWEasd!@#");
 
 		// Try to upload an arbitrary large file
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);

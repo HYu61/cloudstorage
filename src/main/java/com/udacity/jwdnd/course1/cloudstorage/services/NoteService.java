@@ -78,7 +78,7 @@ public class NoteService {
 
         Note need2Delete = noteMapper.findNoteById(noteId,loginUserId).orElseThrow(()->new NoteException("Can not find the note"));
 
-        Integer result = noteMapper.deleteNoteById(noteId);
+        Integer result = noteMapper.deleteNoteById(noteId, loginUserId);
         if(result == null){
             throw new NoteException("The note can not be removed");
         }

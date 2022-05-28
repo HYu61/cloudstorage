@@ -32,7 +32,7 @@
 
                 <div class="tab-content" id="nav-tabContent">
                     <div class="tab-pane fade show active" id="nav-files" role="tabpanel" aria-labelledby="nav-files-tab" >
-                        <form action="#" enctype="multipart/form-data" method="POST">
+                        <form action="#" th:action="@{'/files'}" enctype="multipart/form-data" method="POST">
                             <div class="container">
                                 <div class="row" style="margin: 1em;">
                                     <div class="col-sm-2">
@@ -48,20 +48,26 @@
                             </div>
                         </form>
                         <div class="table-responsive">
-                            <table class="table table-striped" id="fileTable">
+
+                            <div class="alert alert-success" th:if="${fileMsg}" th:text="${fileMsg}">
+                                Sign up was successful!
+                            </div>
+                            <table class="table table-striped" id="fileTable" th:object="${files}">
                                 <thead>
                                     <tr>
                                         <th style="width: 20%" scope="col"></th>
-                                        <th style="width: 80%" scope="col">File Name</th>
+                                        <th style="width: 50%" scope="col">File Name</th>
+                                        <th style="width: 30%" scope="col">File Size</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
+                                <tr th:each="file: ${files}">
                                     <td>
-                                        <a target="_blank" class="btn btn-success">View</a>
-                                        <a  class="btn btn-danger">Delete</a>
+                                        <a th:href="@{/files/fileId(fileId = ${file.fileId})}" target="_blank" class="btn btn-success">View</a>
+                                        <a  th:href="@{/files/delete/fileId(fileId = ${file.fileId})}" class="btn btn-danger">Delete</a>
                                     </td>
-                                    <th scope="row">ExampleFile.txt</th>
+                                    <th scope="row" th:text="${file.fileName}">ExampleFile.txt</th>
+                                    <th scope="row" th:text="${file.fileSize}">ExampleFile.txt</th>
                                 </tr>
                                 </tbody>
                             </table>
@@ -193,7 +199,7 @@
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='/home'">Close</button>
                                         <button type="button" class="btn btn-primary" onclick="$('#credentialSubmit').click();">Save changes</button>
                                     </div>
                                 </div>

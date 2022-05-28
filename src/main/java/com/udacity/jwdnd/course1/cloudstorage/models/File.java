@@ -3,6 +3,8 @@ package com.udacity.jwdnd.course1.cloudstorage.models;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.sql.Blob;
 
 /**
@@ -16,6 +18,6 @@ public class File {
     private String contentType;
     private String fileSize;
     private Integer userId;
-    private String fileData;
+    private byte[] fileData;
 
 }

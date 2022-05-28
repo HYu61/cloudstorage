@@ -19,7 +19,7 @@ public interface CredentialMapper {
     @Select("SELECT * FROM CREDENTIALS WHERE userid = #{loginUserId} ORDER BY credentialid")
     List<Credential> findAllByUserId(Integer loginUserId);
 
-    @Select("SELECT * FROM CREDENTIALS WHERE credentialid = #{credentialId} AND userid = #{loginUserId}")
+    @Select("SELECT * FROM CREDENTIALS WHERE credentialid = #{credentialId} AND userid = #{loginUserId} LIMIT 1")
     Optional<Credential> findCredentialById(Integer credentialId, Integer loginUserId);
 
     @Update("UPDATE CREDENTIALS SET password=#{credential.password} WHERE credentialid = #{credential.credentialId} AND userid = #{loginUserId}")

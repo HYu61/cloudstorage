@@ -19,12 +19,12 @@ public interface NoteMapper {
     @Select("SELECT * FROM NOTES WHERE userid = #{userId} ORDER BY noteid")
     List<Note> findAllByUserId(Integer userId);
 
-    @Select("SELECT * FROM NOTES WHERE noteid = #{noteId} AND userid = #{loginUserId}")
+    @Select("SELECT * FROM NOTES WHERE noteid = #{noteId} AND userid = #{loginUserId} LIMIT 1")
     Optional<Note> findNoteById(Integer noteId, Integer loginUserId);
 
     @Update("UPDATE NOTES SET notetitle= #{note.noteTitle}, notedescription=#{note.noteDescription} WHERE noteid = #{note.noteId}AND userid = #{loginUserId}")
     Integer updateNoteById(Note note,Integer loginUserId);
 
-    @Delete("DELETE FROM NOTES WHERE noteid = #{noteId}")
-    Integer deleteNoteById(Integer noteId);
+    @Delete("DELETE FROM NOTES WHERE noteid = #{noteId} AND userid = #{loginUserId}")
+    Integer deleteNoteById(Integer noteId,Integer loginUserId);
 }
