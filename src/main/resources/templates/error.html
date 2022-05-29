@@ -13,13 +13,13 @@
 
 
         <div class="container justify-content-center w-50 p-3" style="margin-top: 5em;" >
-            <div class="alert alert-danger fill-parent" th:if="${errMsg ==null}">
+            <div class="alert alert-danger fill-parent" th:if="${errMsg ==null}" id="blank-resource">
                 <h1>Ops! The Resource is not Exist!</h1>
 <!--                <span>Click <a th:href="@{'/home'}">here</a> back to homepage.</span>-->
                 <button type="button" class="btn btn-primary" onclick="location.href='/home'">Home</button>
 
             </div>
-            <div class="alert alert-danger fill-parent" th:if="${errMsg !=null}">
+            <div class="alert alert-danger fill-parent" th:if="${errMsg !=null}" id="error-message">
                 <h1 class="display-5">Error</h1>
                 <h3  th:text="${errMsg}">Example Error Message</h3>
                 <button type="button" class="btn btn-primary" onclick="history.back()">Back</button>
