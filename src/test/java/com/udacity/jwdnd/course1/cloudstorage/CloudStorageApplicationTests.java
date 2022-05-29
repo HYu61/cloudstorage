@@ -14,6 +14,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 
 import java.io.File;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CloudStorageApplicationTests {
 
 	@LocalServerPort
@@ -140,22 +141,7 @@ class CloudStorageApplicationTests {
 		Assertions.assertEquals("http://localhost:" + this.port + "/login", driver.getCurrentUrl());
 	}
 
-	/**
-	 * Check if allow duplicate usernames
-	 */
-	@Test
-	public void testDuplicateUsername() {
-		// Create a test account
-		doMockSignUp("Redirection","Test","TestDuplicateUsername","123QWEasd!@#");
 
-		WebElement linkBack2SignUp = driver.findElement(By.id("back-to-signup"));
-		linkBack2SignUp.click();
-		// Create the account using the same username
-		doMockSignUp("Redirection","Test","TestDuplicateUsername","123QWEasd!@#");
-
-		// Check if we have been redirected to the log in page.
-		Assertions.assertTrue(driver.findElement(By.id("error-msg")).getText().contains("Username already exists!"));
-	}
 
 	/**
 	 * PLEASE DO NOT DELETE THIS TEST. You may modify this test to work with the 
@@ -218,6 +204,133 @@ class CloudStorageApplicationTests {
 
 	}
 
+	/**
+	 * Check if allow duplicate usernames
+	 */
+	@Test
+	public void testDuplicateUsername() {
+		// Create a test account
+		doMockSignUp("Redirection","Test","TestDuplicateUsername","123QWEasd!@#");
 
+		WebElement linkBack2SignUp = driver.findElement(By.id("back-to-signup"));
+		linkBack2SignUp.click();
+		// Create the account using the same username
+		doMockSignUp("Redirection","Test","TestDuplicateUsername","123QWEasd!@#");
+
+		// Check if we have been redirected to the log in page.
+		Assertions.assertTrue(driver.findElement(By.id("error-msg")).getText().contains("Username already exists!"));
+	}
+
+//	1. Write Tests for User Signup, Login, and Unauthorized Access Restrictions.
+//	Write a test that verifies that an unauthorized user can only access the login and signup pages.
+	@Test
+	@Order(1)
+	public void testUnauthenticated(){
+
+		// Try to access a home URL and will redirect to login page
+		driver.get("http://localhost:" + this.port + "/home");
+		Assertions.assertTrue(driver.getCurrentUrl().contains("/login"));
+
+		driver.get("http://localhost:" + this.port + "/login");
+		Assertions.assertTrue(driver.getCurrentUrl().contains("/login"));
+
+		driver.get("http://localhost:" + this.port + "/signup");
+		Assertions.assertTrue(driver.getCurrentUrl().contains("/signup"));
+
+	}
+//	Write a test that signs up a new user, logs in, verifies that the home page is accessible, logs out, and verifies that the home page is no longer accessible.
+	@Test
+	@Order(2)
+	public void testSignUpAndLoginAndLogout(){
+		// signup
+		doMockSignUp("Redirection","Test","Test","123QWEasd!@#");
+
+		WebElement linkBack2SignUp = driver.findElement(By.id("back-to-signup"));
+		linkBack2SignUp.click();
+
+		// login then access home
+		doLogIn("Test", "123QWEasd!@#");
+
+		// Check if home page is still accessible, should accessible
+		driver.get("http://localhost:" + this.port + "/home");
+		Assertions.assertTrue(driver.getCurrentUrl().contains("/home"));
+
+		// logout and then access home
+		WebElement logoutButton = driver.findElement(By.id("logout"));
+		logoutButton.click();
+
+		// Check if home page is still accessible should not be accessible
+		driver.get("http://localhost:" + this.port + "/home");
+		Assertions.assertFalse(driver.getCurrentUrl().contains("/home"));
+
+	}
+
+//	2. Write Tests for Note Creation, Viewing, Editing, and Deletion.
+
+	/**
+	 * mock add, modify and delete note
+	 * @param action 1. add note, 2. modify note, 3. delete note
+	 * @param title note title
+	 * @param description note content
+	 */
+	private void mockNoteAction(int action, String title, String description){
+
+		WebElement noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+//
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		// add note
+		if(action == 1){
+			WebElement addNote = driver.findElement(By.id("add-note"));
+
+			// error is here show org.openqa.selenium.ElementNotInteractableException: element not interactable
+			addNote.click();
+		}
+		if(action == 2){
+			WebElement editNote = driver.findElement(By.id("edit-note"));
+			editNote.click();
+		}
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.name("noteTitle")));
+		WebElement inputTitle = driver.findElement(By.name("noteTitle"));
+		inputTitle.click();
+		inputTitle.sendKeys(title);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.name("noteDescription")));
+		WebElement inputDescription = driver.findElement(By.name("noteDescription"));
+		inputDescription.click();
+		inputDescription.sendKeys(description);
+
+
+		// save note
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-save-btn")));
+
+		WebElement saveNoteBtn = driver.findElement(By.id("note-save-btn"));
+		saveNoteBtn.click();
+	}
+//	Write a test that creates a note, and verifies it is displayed.
+	@Test
+	@Order(3)
+	public void testNoteCreat(){
+		doMockSignUp("Redirection","Test","Test","123QWEasd!@#");
+
+		doLogIn("Test", "123QWEasd!@#");
+
+		// add note
+		String inputTitle = "note title";
+		String inputDesc = "note content";
+
+		mockNoteAction(1,inputTitle ,inputDesc );
+
+		String title = driver.findElement(By.id("note-title-tb")).getText();
+		String description = driver.findElement(By.id("note-description-tb")).getText();
+		Assertions.assertTrue(title.equals(inputTitle) && description.equals(inputDesc));
+
+
+
+	}
+//	Write a test that edits an existing note and verifies that the changes are displayed.
+//	Write a test that deletes a note and verifies that the note is no longer displayed.
 
 }
